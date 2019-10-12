@@ -9,6 +9,9 @@
 out/
 output/
 
+# Arquivo de entrada
+in/transactions.csv
+
 # Compiled class file
 *.class
 
