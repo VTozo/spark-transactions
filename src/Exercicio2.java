@@ -25,7 +25,7 @@ class Exercicio2 {
         // Filtragem do header
         linhas = linhas.filter(l -> !l.startsWith("country_or_area"));
 
-        // Mapeamento pela coluna de mercadorias
+        // Mapeamento pela coluna de ano
         linhas = linhas.map(l -> l.split(";")[1]);
 
         // Contagem por valor
