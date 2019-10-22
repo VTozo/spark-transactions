@@ -25,7 +25,7 @@ public class Exercicio8 {
 
         // Filtragem do header
         linhas = linhas.filter(l -> !l.startsWith("country_or_area"));
-        
+
         // Map do fluxo e ano como chave e valores 1.0 para contagem
         JavaPairRDD<String, Double> AnoFluxo = linhas.mapToPair(l -> {
             String[] valores =l.split(";");
