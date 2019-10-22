@@ -25,37 +25,20 @@ public class Exercicio8 {
 
         // Filtragem do header
         linhas = linhas.filter(l -> !l.startsWith("country_or_area"));
-
-        // Filtragem por país
-        linhas = linhas.filter(l -> l.split(";")[0].equals("Brazil"));
-
-        // Filtragem de campo vazio
-        linhas = linhas.filter(l -> !l.split(";")[6].equals(""));
-
-        // Mapeamento pela coluna de ano + mercadorias
-        JavaRDD<String> linhasAnoCategoria = linhas.map(l -> l.split(";")[1] + "_" + l.split(";")[3]);
-
-        // Contagem de ocorrências de cada mercadoria por ano
-        Map<String, Long> contagem = linhasAnoCategoria.countByValue();
-
-        // Criação do PairRDD para armazenar os pesos
-        JavaPairRDD<String, Double> somas = linhas.mapToPair(l -> new Tuple2<>(
-                        l.split(";")[1] + "_" + l.split(";")[3],
-                        Double.parseDouble(l.split(";")[6])
-                )
-        );
-
-        // Soma dos pesos
-        somas = somas.reduceByKey(Double::sum);
-
-        // Cálculo da média
-        JavaPairRDD<String, Double> resultados = somas.mapToPair(s -> new Tuple2<>(
-                s._1(),
-                s._2() / contagem.get(s._1())
-        ));
+        
+        // Map do fluxo e ano como chave e valores 1.0 para contagem
+        JavaPairRDD<String, Double> AnoFluxo = linhas.mapToPair(l -> {
+            String[] valores =l.split(";");
+            String ano = valores[1].equals("") ? "0" : valores [1];
+            String fluxo = valores[4].equals("") ? "0" : valores [4];
+            return new Tuple2<>(ano + "_" + fluxo, 1.0);
+        });
+        
+        //Contagem das ocorrencias por reduce
+        JavaPairRDD<String, Double> resultado = AnoFluxo.reduceByKey((x,y) -> x + y);
 
         // Impressão dos resultados
-        resultados.foreach(data -> System.out.println(data._2().toString() + "\t" + data._1()));
+        resultado.foreach(data -> System.out.println(data._1()+ "\t" + data._2()));
 
     }
 
