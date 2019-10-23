@@ -26,11 +26,10 @@ public class Exercicio6 {
         // Filtragem do header
         linhas = linhas.filter(l -> !l.startsWith("country_or_area"));
 
-        // Filtragem por país
-        linhas = linhas.filter(l -> l.split(";")[0].equals("Brazil"));
-
         // Filtragem de campo vazio
         linhas = linhas.filter(l -> !l.split(";")[6].equals(""));
+        linhas = linhas.filter(l -> !(Double.parseDouble(l.split(";")[6]) == 0));
+
 
         // Mapeamento pela coluna de ano + mercadorias
         JavaRDD<String> linhasAnoCategoria = linhas.map(l -> l.split(";")[1] + "_" + l.split(";")[3]);
