@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class Exercicio7 {
     private static String resultado = "";
-    private static long maior = 0;
+    private static double maior = 0;
 
     public static void main(String[] args) {
 
@@ -31,7 +31,11 @@ public class Exercicio7 {
         linhas = linhas.filter(l -> !l.startsWith("country_or_area"));
 
         // Filtragem de campo vazio
+        linhas = linhas.filter(l -> !l.split(";")[1].equals(""));
+        linhas = linhas.filter(l -> !l.split(";")[3].equals(""));
+        linhas = linhas.filter(l -> !l.split(";")[5].equals(""));
         linhas = linhas.filter(l -> !l.split(";")[6].equals(""));
+        linhas = linhas.filter(l -> !(Double.parseDouble(l.split(";")[6]) == 0));
 
         // Mapeamento pela coluna de ano + mercadorias
         JavaRDD<String> linhasAnoCategoria = linhas.map(l -> l.split(";")[1] + "_" + l.split(";")[3]);
@@ -41,7 +45,7 @@ public class Exercicio7 {
 
         // Criação do PairRDD para armazenar os valores/pesos
         JavaPairRDD<String, Double> somas = linhas.mapToPair(l -> new Tuple2<>(
-                        l.split(";")[1] + "_" + l.split(";")[3],
+                        l.split(";")[1],
                         Double.parseDouble(l.split(";")[5])/Double.parseDouble(l.split(";")[6])
                 )
         );
@@ -55,16 +59,26 @@ public class Exercicio7 {
                 s._2() / contagem.get(s._1())
         ));
 
+        // Encontra os maiores valores e armazena em "resultado"
+        resultados.foreach(v->defineMaiores(v._1(),v._2()));
 
-        // Encontra os maiores valores/pesos e armazena em "resultado"
-        JavaPairRDD<String, Double> resultado = resultados.reduceByKey((x,y) -> {
-            if (y > x){
-                x = y;
-            }
-            return x;
-        });
         // Imprime o resultado
-        System.out.println(resultado.collectAsMap());
+        System.out.println(resultado);
+
+    }
+
+    // Encontra os maiores valores e armazena em "resultado"
+    private static void defineMaiores(String x, double y) {
+
+        // Se o valor recebido for o maior encontrado, é armazenado
+        if (y > maior) {
+            maior = y;
+            resultado = y + "\t" + x;
+        }
+        // Se o valor recebido for igual ao maior, é concatenado ao resultado
+        else if (y == maior) {
+            resultado += "\n" + y + "\t" + x;
+        }
 
     }
 
